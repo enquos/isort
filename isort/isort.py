@@ -451,20 +451,11 @@ class SortImports(object):
                 self._add_from_imports(from_modules, section, from_output)
                 self._add_straight_imports(straight_modules, section, straight_output)
 
-            new_from_output = []
-            new_straight_output = []
-            for line in from_output:
-                for element in line.split('\n'):
-                    new_from_output.append(element)
-            for line in straight_output:
-                for element in line.split('\n'):
-                    new_straight_output.append(element)
-
-
-            sorted_from = sorted(new_from_output, key=lambda import_string: import_string.lower())
-            sorted_straight = sorted(new_straight_output, key=lambda import_string: import_string.lower())
-            output = (sorted_from + [''] + sorted_straight) if (sorted_from and sorted_straight) else \
-                     (sorted_from or sorted_straight)
+            output = (
+                sorted(
+                    itertools.chain(
+                        (elem for entry in from_output for elem in entry.splitlines()),
+                        (elem for entry in straight_output for elem in entry.splitlines()))))
         else:
             output = []
             for section in itertools.chain(self.sections, self.config['forced_separate']):
